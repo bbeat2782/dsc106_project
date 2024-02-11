@@ -61,13 +61,18 @@
 
   function toggleDropdown() {
     dropdownOpen = !dropdownOpen;
-    // console.log(dropdownOpen);
   }
 
   function closeDropdown(event) {
     if (dropdownOpen && !event.target.closest('.dropdown')) {
       dropdownOpen = false;
     }
+  }
+
+  function getColorClass(country) {
+      const index = selectedCountries.indexOf(country);
+      const colors = ["#648FFF", "#785EF0", "#DC267F", "#FE6100" ,"#FFB000"];
+      return colors[index % colors.length];
   }
 
 </script>
@@ -87,7 +92,7 @@
 
   <div class="selected-countries">
     {#each selectedCountries as country}
-      <div class="selected-country" on:click={() => removeSelectedCountry(country)}>{country}</div>
+      <div class="selected-country" style="color: {getColorClass(country)}" on:click={() => removeSelectedCountry(country)}>{country}</div>
     {/each}
   </div>
 

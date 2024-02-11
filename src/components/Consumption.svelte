@@ -32,25 +32,11 @@
     };
   })
 
-  // NOTE takes too long to draw all countries
-  // $: if (selectedCountries.length == 0) {
-  //   countryData = data.map(d => {
-  //     return {
-  //       country: d.country,
-  //       data: data.filter(v => v.prim_cons_per_capita !== 0)
-  //     }
-  //   });
-  //   console.log(countryData);
-  // }
-
   $: if(selectedCountries) {
     maxPrimConsPerCapita = 0;
-    // reset gridlines TODO
-    // d3.select(gy).call((g) => g.selectAll('.tick line').remove());
   }
 
 
-//   $: maxPrimConsPerCapita = 0;
   $: countryData.forEach(country => {
     country.data.forEach(d => {
         if (d.prim_cons_per_capita > maxPrimConsPerCapita) {
@@ -58,9 +44,6 @@
         }
     });
   });
-
-  // $: console.log(maxPrimConsPerCapita);
-  // $: console.log(selectedCountries);
 
   $: years = worldData.map(d => d.year);
   $: world_primary_energy_cons_per_capita = worldData.map(d => d.prim_cons_per_capita);
@@ -87,16 +70,12 @@
     .attr("transform", `translate(${marginLeft},0)`)
     .call(d3.axisLeft(y)
     .tickSize(-(width-marginRight-marginLeft))
-    // .ticks(null, '+')
     .tickFormat(d3.format(".2s")))
     .call(g => g.select(".domain").remove())
     // grid lines
     .call((g) =>
       g
         .selectAll('.tick line')
-        //.clone()
-        //.attr('x2', width - marginRight - marginLeft)
-        //.attr('stroke-opacity', (d) => (d === 0 ? 1 : 0.1)),
         .attr('stroke-opacity', 0.1),
     );
 
@@ -105,7 +84,6 @@
     .x(d => x(d.year))
     .y(d => y(d.prim_cons_per_capita));
 
-  // $: console.log(worldData);
   $: linePath = line(worldData);
 
   $: linesCountry = countryData.map(c => line(c.data));
