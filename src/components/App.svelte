@@ -11,10 +11,6 @@
   const continentList = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania', 'World'];
 
   onMount(async () => {
-    // const res = await fetch(
-    //   //'http://localhost:5173/owid-energy-data.csv',
-    //   'http://localhost:4173/dsc106/owid-energy-data.csv',
-    // );
     const res = await fetch(
       'https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv',
     );
@@ -25,23 +21,21 @@
       iso_code: d['iso_code'],
       population: +d['population'],
       gdp: +d['gdp'],
-      biofuel_consumption: +d['biofuel_consumption'],
-      coal_consumption: +d['coal_consumption'],
-      fossil_fuel_consumption: +d['fossil_fuel_consumption'],
-      gas_consumption: +d['gas_consumption'],
+      biofuel_consumption: +d['biofuel_cons_per_capita'],
+      coal_consumption: +d['coal_cons_per_capita'],
+      fossil_fuel_consumption: +d['fossil_energy_per_capita'],
+      gas_consumption: +d['gas_energy_per_capita'],
       hydro_consumption: +d['hydro_consumption'],
-      low_carbon_consumption: +d['low_carbon_consumption'],
-      nuclear_consumption: +d['nuclear_consumption'],
-      oil_consumption: +d['oil_consumption'],
-      other_renewable_consumption: +d['other_renewable_consumption'],
-      primary_energy_consumption: +d['primary_energy_consumption'],
-      renewables_consumption: +d['renewables_consumption'],
-      solar_consumption: +d['solar_consumption'],
-      wind_consumption: +d['wind_consumption'],
-      prim_cons_per_capita: +d['primary_energy_consumption'] / +d['population'],
+      low_carbon_consumption: +d['low_carbon_energy_per_capita'],
+      nuclear_consumption: +d['nuclear_energy_per_capita'],
+      oil_consumption: +d['oil_energy_per_capita'],
+      other_renewable_consumption: +d['other_renewables_energy_per_capita'],
+      renewables_consumption: +d['renewables_energy_per_capita'],
+      solar_consumption: +d['solar_energy_per_capita'],
+      wind_consumption: +d['wind_energy_per_capita'],
+      prim_cons_per_capita: +d['energy_per_capita'],
     }));
     data = data.filter(d => d.iso_code !== '' || continentList.includes(d.country));
-    // console.log(data);
     uniqueCountries = [...new Set(data.map(d => d.country))];
   });
 
@@ -51,11 +45,13 @@
 
   function handleCountrySelect(country) {
     // check if the country is already selected
-    if (!selectedCountries.includes(country)) {
+    if (!selectedCountries.includes(country) && (selectedCountries.length < 5)) {
       // add it to the selected countries array
       selectedCountries = [...selectedCountries, country];
       inputText = '';  // reset the query
       dropdownOpen = false;
+    } else {
+      alert("Not able to view more than 5 countries at once. Please remove a country before proceeding.")
     }
   }
   

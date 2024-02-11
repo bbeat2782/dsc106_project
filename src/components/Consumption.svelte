@@ -15,9 +15,13 @@
   const marginBottom = 30;
   const marginLeft = 40;
 
+  const line_color = d3.scaleOrdinal()
+			.range(["#648FFF", "#785EF0", "#DC267F", "#FE6100" ,"#FFB000"]);
+
   // Placeholders for the axis elements.
   let gx;
   let gy;
+  let svg;
 
   $: maxPrimConsPerCapita = 0
   $: worldData = data.filter(d => d.country === 'World' && d.prim_cons_per_capita !== 0);
@@ -80,15 +84,18 @@
 
   
   $: d3.select(gy)
+    .attr("transform", `translate(${marginLeft},0)`)
     .call(d3.axisLeft(y)
+    .tickSize(-(width-marginRight-marginLeft))
     // .ticks(null, '+')
     .tickFormat(d3.format(".2s")))
+    .call(g => g.select(".domain").remove())
     // grid lines
     .call((g) =>
       g
         .selectAll('.tick line')
-        .clone()
-        .attr('x2', width - marginRight - marginLeft)
+        //.clone()
+        //.attr('x2', width - marginRight - marginLeft)
         //.attr('stroke-opacity', (d) => (d === 0 ? 1 : 0.1)),
         .attr('stroke-opacity', 0.1),
     );
@@ -98,37 +105,69 @@
     .x(d => x(d.year))
     .y(d => y(d.prim_cons_per_capita));
 
+  // $: console.log(worldData);
   $: linePath = line(worldData);
 
   $: linesCountry = countryData.map(c => line(c.data));
-  $: console.log(linesCountry);
+
+
+  // For tool tips
+  const bisect = d3.bisector((d) => d.year).center;
+  let tooltipPt = null;
+  function onPointerMove(event) {
+    const i = bisect(worldData, x.invert(d3.pointer(event)[0]));
+    tooltipPt = worldData[i];
+  }
+
+  function onPointerLeave(event) {
+    tooltipPt = null;
+  }
+
+  $: d3.select(svg)
+    .on('pointerenter pointermove', onPointerMove)
+    .on('pointerleave', onPointerLeave);
 </script>
 
 <div class="consumption-plot">
     <svg
-    {width}
-    {height}
-    viewBox="0 0 {width} {height}"
-    style="max-width: 100%; height: auto;"
-  >
-    <!-- x-axis -->
-    <g bind:this={gx} transform="translate(0,{height - marginBottom})" />
-    <!-- y-axis -->
-    <g bind:this={gy} transform="translate({marginLeft},0)">
-        <text
-            x="5"
-            y={marginTop}
-            dy="0.32em"
-            fill="#000"
-            font-weight="bold"
-            text-anchor="start"
-        >
-            Primary Energy Consumption per Capita
-        </text>
-    </g>
-    <path d={linePath} fill="none" stroke="blue" stroke-width="2" />
-    {#each linesCountry as line, i}
-        <path d={line} fill="none" stroke="black" stroke-width="2" />
-    {/each}
-  </svg>
+      bind:this={svg}
+      {width}
+      {height}
+      viewBox="0 0 {width} {height}"
+      style="max-width: 100%; height: auto;"
+    >
+      <!-- x-axis -->
+      <g bind:this={gx} transform="translate(0,{height - marginBottom})" />
+      <!-- y-axis -->
+      <g bind:this={gy} transform="translate({marginLeft},0)">
+          <text
+              x="5"
+              y={marginTop}
+              dy="0.32em"
+              fill="#000"
+              font-weight="bold"
+              text-anchor="start"
+          >
+              Primary Energy Consumption per Capita (kWh per person)
+          </text>
+      </g>
+      <path d={linePath} fill="none" stroke="black" stroke-width="2" stroke-dasharray="5,5,5" />
+      {#each linesCountry as line, i}
+          <path d={line} fill="none" stroke={line_color(i)} stroke-width="2" />
+      {/each}
+
+      <!-- tooltip -->
+      {#if tooltipPt}
+        <g transform="translate({x(tooltipPt.year)},{y(tooltipPt.prim_cons_per_capita) + 20})">
+          <rect x="-7" y="-7" width="120" height="54" fill="white" stroke="black" />
+          <!-- Adjust the translation to center the box vertically -->
+          <g transform="translate(0, 5)">
+              <text x="0" y="0" font-size="10" text-anchor="left" font-weight="bold">{tooltipPt.country} - {tooltipPt.year}</text>
+              <text x="0" y="12" font-size="10" text-anchor="left">Renewables: {tooltipPt.renewables_consumption}</text>
+              <text x="0" y="24" font-size="10" text-anchor="left">Nuclear: {tooltipPt.nuclear_consumption}</text>
+              <text x="0" y="36" font-size="10" text-anchor="left">Fossil fuel: {tooltipPt.fossil_fuel_consumption}</text>
+          </g>
+        </g>
+      {/if}
+    </svg>
 </div>
