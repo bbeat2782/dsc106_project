@@ -105,7 +105,7 @@
       // Set a new debounce timer to update the tooltip after a short delay
       debounceTimer = setTimeout(() => {
           updateTooltip(tooltipPt);
-      }, 50);
+      }, 10);
   }
 
 
@@ -114,7 +114,6 @@
     const mouseY = d3.pointer(event)[1];
     let closestData = null;
     let closestDistance = Infinity;
-
 
     combined.forEach(country => {
       country.data.forEach(d => {
@@ -149,7 +148,7 @@
         .style("padding", "5px")
         .style("border", "1px solid black")
         .style("display", "none")
-        .style("width", "auto");
+        .style("width", "200px");
     }
 
     if (tooltipPt) {
@@ -166,8 +165,6 @@
       `)
       .style("left", `${tooltipX}px`)
       .style("top", `${tooltipY}px`)
-      // .style("left", "0")
-      // .style("top", "0")
       .style("display", "block")
       .style("line-height", "1.15")
       .style("transform", "translate(-25%, 50%)");
@@ -202,13 +199,14 @@
         { name: "Wind", value: tooltipPt.wind_consumption },
         { name: "Solar", value: tooltipPt.solar_consumption }
       ];
-      const total = barData.reduce((acc, d) => acc + d.value, 0); 
+
       barData.sort((a, b) => b.value - a.value);
       const topThree = barData.slice(0, 3);
       const othersTotal = barData.slice(3).reduce((sum, entry) => sum + entry.value, 0);
       const others = { name: "Others", value: othersTotal };
       barData = topThree.concat(others);
       barData.sort((a, b) => b.value - a.value);
+      const total = barData.reduce((acc, d) => acc + d.value, 0); 
 
       const tooltipContent = tooltip.select(".tooltip-content");
       tooltipContent.selectAll(".barplot").remove();
@@ -255,7 +253,6 @@
           .style("padding-right", "2px")
           .style("line-height", "15px")
           .text(d => `${Math.round(d.value / total * 100)}%`);
-
     } else {
       tooltip.style("display", "none");
     }

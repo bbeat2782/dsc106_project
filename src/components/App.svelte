@@ -8,7 +8,7 @@
   let uniqueCountries = [];
   let selectedCountries = [];
   let dropdownOpen = false;
-  const continentList = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania'];
+  const continentList = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania', 'World'];
 
   onMount(async () => {
     const res = await fetch(
