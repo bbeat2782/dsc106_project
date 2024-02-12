@@ -149,7 +149,7 @@
         .style("padding", "5px")
         .style("border", "1px solid black")
         .style("display", "none")
-        .style("width", "200px");
+        .style("width", "220px");
     }
 
     if (tooltipPt) {
