@@ -21,18 +21,18 @@
       iso_code: d['iso_code'],
       population: +d['population'],
       gdp: +d['gdp'],
-      biofuel_consumption: +d['biofuel_cons_per_capita'],
-      coal_consumption: +d['coal_cons_per_capita'],
-      fossil_fuel_consumption: +d['fossil_energy_per_capita'],
-      gas_consumption: +d['gas_energy_per_capita'],
-      hydro_consumption: +d['hydro_consumption'],
-      low_carbon_consumption: +d['low_carbon_energy_per_capita'],
-      nuclear_consumption: +d['nuclear_energy_per_capita'],
-      oil_consumption: +d['oil_energy_per_capita'],
-      other_renewable_consumption: +d['other_renewables_energy_per_capita'],
-      renewables_consumption: +d['renewables_energy_per_capita'],
-      solar_consumption: +d['solar_energy_per_capita'],
-      wind_consumption: +d['wind_energy_per_capita'],
+      biofuel_consumption: Math.round(+d['biofuel_cons_per_capita']),
+      coal_consumption: Math.round(+d['coal_cons_per_capita']),
+      fossil_fuel_consumption: Math.round(+d['fossil_energy_per_capita']),
+      gas_consumption: Math.round(+d['gas_energy_per_capita']),
+      hydro_consumption: Math.round(+d['hydro_consumption']),
+      low_carbon_consumption: Math.round(+d['low_carbon_energy_per_capita']),
+      nuclear_consumption: Math.round(+d['nuclear_energy_per_capita']),
+      oil_consumption: Math.round(+d['oil_energy_per_capita']),
+      other_renewable_consumption: Math.round(+d['other_renewables_energy_per_capita']),
+      renewables_consumption: Math.round(+d['renewables_energy_per_capita']),
+      solar_consumption: Math.round(+d['solar_energy_per_capita']),
+      wind_consumption: Math.round(+d['wind_energy_per_capita']),
       prim_cons_per_capita: +d['energy_per_capita'],
     }));
     data = data.filter(d => d.iso_code !== '' || continentList.includes(d.country));
@@ -71,7 +71,7 @@
 
   function getColorClass(country) {
       const index = selectedCountries.indexOf(country);
-      const colors = ["#648FFF", "#785EF0", "#DC267F", "#FE6100" ,"#FFB000"];
+      const colors = ["#648FFF", "#FE6100", "#DC267F", "#FFB000" ,"#785EF0"];
       return colors[index % colors.length];
   }
 
@@ -80,7 +80,7 @@
 <main on:click={closeDropdown}>
   <h1>Primary Energy Consumption per Capita Trends</h1>
   <div class="dropdown" on:click={toggleDropdown}>
-    <input type="text" on:input={handleInput} bind:value={inputText}>
+    <input type="text" placeholder="Search a country" on:input={handleInput} bind:value={inputText}>
     <div class="dropdown-content" style="display: {dropdownOpen ? 'block' : 'none'}">
       {#if inputText !== ''}
         {#each uniqueCountries.filter(country => country.toLowerCase().includes(inputText) && !selectedCountries.includes(country)) as country}

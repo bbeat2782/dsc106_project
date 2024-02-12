@@ -16,9 +16,8 @@
   const marginLeft = 40;
 
   const line_color = d3.scaleOrdinal()
-			.range(["#648FFF", "#785EF0", "#DC267F", "#FE6100" ,"#FFB000"]);
+			.range(["#648FFF", "#FE6100", "#DC267F", "#FFB000" ,"#785EF0"]);
 
-  // Placeholders for the axis elements.
   let gx;
   let gy;
   let svg;
@@ -88,17 +87,178 @@
 
   $: linesCountry = countryData.map(c => line(c.data));
 
-
+  $: combined = [ ...countryData, {country: 'World', data: data.filter(d => d.country === 'World' && d.prim_cons_per_capita !== 0)}];
   // For tool tips
   const bisect = d3.bisector((d) => d.year).center;
   let tooltipPt = null;
+  let debounceTimer;
+
+  function updateTooltipDebounced(tooltipPt) {
+      // Clear previous debounce timer
+      clearTimeout(debounceTimer);
+
+      if (tooltipPt !== null) {
+          updateTooltip(tooltipPt);
+          return;
+      }
+
+      // Set a new debounce timer to update the tooltip after a short delay
+      debounceTimer = setTimeout(() => {
+          updateTooltip(tooltipPt);
+      }, 100); // Adjust the delay time (in milliseconds) as needed
+  }
+
+
   function onPointerMove(event) {
-    const i = bisect(worldData, x.invert(d3.pointer(event)[0]));
-    tooltipPt = worldData[i];
+    const mouseX = d3.pointer(event)[0];
+    const mouseY = d3.pointer(event)[1];
+    let closestData = null;
+    let closestDistance = Infinity;
+
+
+    combined.forEach(country => {
+      country.data.forEach(d => {
+        const xValue = x(d.year);
+        const yValue = y(d.prim_cons_per_capita);
+        const distance = Math.sqrt((xValue - mouseX) ** 2 + (yValue - mouseY) ** 2);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestData = { ...d, country: country.country };
+        }
+      });
+    });
+
+    tooltipPt = closestData;
+    updateTooltipDebounced(tooltipPt);
   }
 
   function onPointerLeave(event) {
     tooltipPt = null;
+    updateTooltipDebounced(tooltipPt);
+  }
+
+  let tooltip;
+  function updateTooltip(tooltipPt) {
+    if (!tooltip) {
+      // Initialize tooltip for the first time
+      tooltip = d3.select(".consumption-plot")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("padding", "5px")
+        .style("border", "1px solid black")
+        .style("display", "none")
+        .style("width", "200px");
+    }
+
+    if (tooltipPt) {
+      const tooltipX = x(tooltipPt.year);
+      const tooltipY = y(tooltipPt.prim_cons_per_capita);
+
+      tooltip.html(`
+        <div class="tooltip">
+          <b>${tooltipPt.country} - ${tooltipPt.year}</b><br>(${tooltipPt.prim_cons_per_capita} kWh)
+          <div class="tooltip-content">
+              <div class="barplot"></div>
+          </div>
+        </div>
+      `)
+      .style("left", `${tooltipX}px`)
+      .style("top", `${tooltipY}px`)
+      // .style("left", "0")
+      // .style("top", "0")
+      .style("display", "block")
+      .style("line-height", "1.15")
+      .style("transform", "translate(-25%, 50%)");
+
+      let circleColor;
+      if (tooltipPt.country === 'World') {
+        circleColor = "black";
+      } else {
+        const lineColorIndex = selectedCountries.indexOf(tooltipPt.country);
+        circleColor = line_color(lineColorIndex);
+      }
+
+      d3.select(".consumption-plot svg").selectAll(".tooltip-circle").remove(); // Remove previous circles
+      d3.select(".consumption-plot svg")
+          .append("circle")
+          .attr("class", "tooltip-circle")
+          .attr("cx", tooltipX)
+          .attr("cy", tooltipY)
+          .attr("r", 3.5)
+          .attr("fill", circleColor);
+
+      // Draw bar plot
+      let barData = [
+        { name: "Biofuel", value: tooltipPt.biofuel_consumption },
+        { name: "Coal", value: tooltipPt.coal_consumption },
+        { name: "Fossil fuel", value: tooltipPt.fossil_fuel_consumption },
+        { name: "Gas", value: tooltipPt.gas_consumption },
+        { name: "Hydro", value: tooltipPt.hydro_consumption },
+        { name: "Low Carbon", value: tooltipPt.low_carbon_consumption },
+        { name: "Nuclear", value: tooltipPt.nuclear_consumption },
+        { name: "Oil", value: tooltipPt.oil_consumption },
+        { name: "Wind", value: tooltipPt.wind_consumption },
+        { name: "Solar", value: tooltipPt.solar_consumption }
+      ];
+      const total = barData.reduce((acc, d) => acc + d.value, 0); 
+      barData.sort((a, b) => b.value - a.value);
+      const topThree = barData.slice(0, 3);
+      const othersTotal = barData.slice(3).reduce((sum, entry) => sum + entry.value, 0);
+      const others = { name: "Others", value: othersTotal };
+      barData = topThree.concat(others);
+      barData.sort((a, b) => b.value - a.value);
+
+      const tooltipContent = tooltip.select(".tooltip-content");
+      tooltipContent.selectAll(".barplot").remove();
+
+      tooltip.select(".tooltip")
+        .style("font-size", "13px");
+
+      tooltip.select(".tooltip-content")
+        .style("font-size", "10px");
+      
+      const bars = tooltipContent.selectAll(".barplot")
+          .data(barData)
+          .enter().append("div")
+          .attr("class", "barplot")
+          .style("display", "flex")
+          .style("height", "15px")
+          .style("margin-top", "5px")
+          .style("position", "relative");
+
+      bars.append("div")
+          .text(d => d.name)
+          .style("position", "absolute")
+          .style("text-align", "left")
+          .style("white-space", "nowrap");
+
+      const barBlocks = bars.append("div")
+          .style("display", "flex")
+          .style("justify-content", "flex-end")
+          .style("height", "100%")
+          .style("width", "100%")
+          .style("position", "relative");
+
+      barBlocks.append("div")
+          .style("background-color", "steelblue")
+          .style("height", "100%")
+          .style("width", d => `${Math.round(d.value / total * 100)}%`)
+          .style("margin-right", "22px");
+
+      barBlocks.append("div")
+          .style("position", "absolute")
+          .style("right", "0")
+          .style("top", "0")
+          .style("font-size", "0.8em")
+          .style("padding-right", "2px")
+          .style("line-height", "15px")
+          .text(d => `${Math.round(d.value / total * 100)}%`);
+
+    } else {
+      tooltip.style("display", "none");
+    }
   }
 
   $: d3.select(svg)
@@ -136,16 +296,6 @@
 
       <!-- tooltip -->
       {#if tooltipPt}
-        <g transform="translate({x(tooltipPt.year)},{y(tooltipPt.prim_cons_per_capita) + 20})">
-          <rect x="-7" y="-7" width="120" height="54" fill="white" stroke="black" />
-          <!-- Adjust the translation to center the box vertically -->
-          <g transform="translate(0, 5)">
-              <text x="0" y="0" font-size="10" text-anchor="left" font-weight="bold">{tooltipPt.country} - {tooltipPt.year}</text>
-              <text x="0" y="12" font-size="10" text-anchor="left">Renewables: {tooltipPt.renewables_consumption}</text>
-              <text x="0" y="24" font-size="10" text-anchor="left">Nuclear: {tooltipPt.nuclear_consumption}</text>
-              <text x="0" y="36" font-size="10" text-anchor="left">Fossil fuel: {tooltipPt.fossil_fuel_consumption}</text>
-          </g>
-        </g>
       {/if}
     </svg>
 </div>
