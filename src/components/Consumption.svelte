@@ -105,7 +105,7 @@
       // Set a new debounce timer to update the tooltip after a short delay
       debounceTimer = setTimeout(() => {
           updateTooltip(tooltipPt);
-      }, 100); // Adjust the delay time (in milliseconds) as needed
+      }, 50);
   }
 
 
@@ -149,7 +149,7 @@
         .style("padding", "5px")
         .style("border", "1px solid black")
         .style("display", "none")
-        .style("width", "220px");
+        .style("width", "auto");
     }
 
     if (tooltipPt) {
