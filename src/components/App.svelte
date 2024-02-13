@@ -122,7 +122,7 @@
   main {
     text-align: center;
     font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
+    font-weight: 200;
     line-height: 2;
     font-size: 24px;
     color: var(--color-text);
