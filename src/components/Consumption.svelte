@@ -1,6 +1,6 @@
 <script>
   import * as d3 from 'd3';
-  import { getContext } from 'svelte';
+  import { getAllContexts, getContext } from 'svelte';
 
 
   export let data;
@@ -144,7 +144,7 @@
         .append("div")
         .attr("class", "tooltip")
         .style("position", "absolute")
-        .style("background-color", "white")
+        style("background-color", "rgba(255, 255, 255, 0.4)")
         .style("padding", "5px")
         .style("border", "1px solid black")
         .style("display", "none")
@@ -201,22 +201,39 @@
       ];
 
       barData.sort((a, b) => b.value - a.value);
+      console.log(barData)
       const topThree = barData.slice(0, 3);
       const othersTotal = barData.slice(3).reduce((sum, entry) => sum + entry.value, 0);
       const others = { name: "Others", value: othersTotal };
       barData = topThree.concat(others);
       barData.sort((a, b) => b.value - a.value);
-      const total = barData.reduce((acc, d) => acc + d.value, 0); 
+      const total = barData.reduce((acc, d) => acc + d.value, 0);
+     
+      const topThreeZero = topThree.every(entry => entry.value === 0);
+
+
+      // Color scale
+      const minValue = d3.min(barData, d => d.value);
+      const maxValue = d3.max(barData, d => d.value);
+      const colorScale = d3.scaleLinear()
+      .domain([minValue, (minValue + maxValue) / 2, maxValue])
+      .range([ '#3d3d3d', '#2f2f2e', '#222121','#121212']);
 
       const tooltipContent = tooltip.select(".tooltip-content");
       tooltipContent.selectAll(".barplot").remove();
 
       tooltip.select(".tooltip")
         .style("font-size", "13px");
-
+      
       tooltip.select(".tooltip-content")
         .style("font-size", "10px");
       
+      if (topThreeZero){
+        tooltip.select("tooltip-content")
+        .html("<div>Data Not Available</div>");
+      }
+      else {
+    
       const bars = tooltipContent.selectAll(".barplot")
           .data(barData)
           .enter().append("div")
@@ -224,13 +241,14 @@
           .style("display", "flex")
           .style("height", "15px")
           .style("margin-top", "5px")
-          .style("position", "relative");
-
+          .style("position", "relative")
+          .style("bar-color", "red");
       bars.append("div")
           .text(d => d.name)
           .style("position", "absolute")
           .style("text-align", "left")
-          .style("white-space", "nowrap");
+          .style("white-space", "nowrap")
+          .style("right", "100px"); 
 
       const barBlocks = bars.append("div")
           .style("display", "flex")
@@ -240,11 +258,10 @@
           .style("position", "relative");
 
       barBlocks.append("div")
-          .style("background-color", "steelblue")
+          .style("background-color", d => colorScale(d.value)) // Use the color scale
           .style("height", "100%")
           .style("width", d => `${Math.round(d.value / total * 100)}%`)
           .style("margin-right", "22px");
-
       barBlocks.append("div")
           .style("position", "absolute")
           .style("right", "0")
@@ -253,6 +270,7 @@
           .style("padding-right", "2px")
           .style("line-height", "15px")
           .text(d => `${Math.round(d.value / total * 100)}%`);
+      }
     } else {
       tooltip.style("display", "none");
     }

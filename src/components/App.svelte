@@ -122,16 +122,17 @@
 
   main {
     text-align: center;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Inria Sans', sans-serif;
     font-weight: 200;
     line-height: 2;
-    font-size: 24px;
+    font-size: 10px;
     color: var(--color-text);
+    background-image: url(/src/fa);
   }
 
   h1 {
-    font-size: 2em;
-    font-weight: 100;
+    font-size: 3em;
+    font-weight: bolder;
     line-height: 2;
   }
 
@@ -141,7 +142,7 @@
   }
 
   .dropdown-item:hover {
-      background-color: #f0f0f0; /* Change background color on hover */
+      background-color: #bce7f4; /* Change background color on hover */
   }
 
   .dropdown-content {
@@ -169,6 +170,7 @@
 
   .selected-country {
     background-color: #f0f0f0;
+    text-decoration-color: #3f4252;
     padding: 5px 10px;
     margin: 5px;
     position: relative;
