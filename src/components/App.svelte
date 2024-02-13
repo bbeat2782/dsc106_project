@@ -100,7 +100,7 @@
 </main>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Protest+Strike');
 
   :root {
     --color-bg: #ffffff;
@@ -121,7 +121,7 @@
 
   main {
     text-align: center;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Protest Strike', protest strike;
     font-weight: 300;
     line-height: 2;
     font-size: 24px;
