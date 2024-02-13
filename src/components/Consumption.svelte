@@ -172,12 +172,6 @@
             tooltipY = height - tooltipHeight;
       }
 
-      tooltip.style("left", `${tooltipX}px`)
-          .style("top", `${tooltipY}px`)
-          .style("display", "block")
-          .style("line-height", "1.15")
-          .style("transform", "translate(-25%, 50%)");
-
 
       tooltip.html(`
         <div class="tooltip">
