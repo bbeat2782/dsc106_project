@@ -155,9 +155,21 @@
       const tooltipX = x(tooltipPt.year);
       const tooltipY = y(tooltipPt.prim_cons_per_capita);
 
-      // ADJUSTING TOOLTIP 
+      // HERE 
       const tooltipWidth = tooltip.node().offsetWidth;
       const tooltipHeight = tooltip.node().offsetHeight;
+
+      const mouseX = d3.pointer(event)[0];
+      const mouseY = d3.pointer(event)[1];
+
+      const rect = svg.getBoundingClientRect();
+      if (tooltipX + tooltipWidth > rect.right) {
+            tooltipX = rect.right - tooltipWidth;
+      }
+
+      if (tooltipY + tooltipHeight > rect.bottom) {
+            tooltipY = rect.bottom - tooltipHeight;
+      }
 
 
       tooltip.html(`
