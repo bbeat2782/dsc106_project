@@ -84,7 +84,7 @@
     <div class="dropdown-content" style="display: {dropdownOpen ? 'block' : 'none'}">
       {#if inputText !== ''}
         {#each uniqueCountries.filter(country => country.toLowerCase().includes(inputText) && !selectedCountries.includes(country)) as country}
-          <div on:click={() => handleCountrySelect(country)}>{country}</div>
+          <div class="dropdown-item" on:click={() => handleCountrySelect(country)}>{country}</div>
         {/each}
       {/if}
     </div>
@@ -92,7 +92,9 @@
 
   <div class="selected-countries">
     {#each selectedCountries as country}
-      <div class="selected-country" style="color: {getColorClass(country)}" on:click={() => removeSelectedCountry(country)}>{country}</div>
+      <div class="selected-country" style="color: {getColorClass(country)}">
+        <input type="checkbox" class="done" on:click={() => removeSelectedCountry(country)}>{country}<br>
+      </div>
     {/each}
   </div>
 
@@ -100,8 +102,7 @@
 </main>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap')
-  
+  @import url('https://urldefense.com/v3/__https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap__;!!Mih3wA!Aycbzsnv_MBp12VkXdbhGtgaYZ57wTbfZe5Y_cuB4d9pUNWtjLVVNWxxVm9mqNc6X1xOKdUhmMJHBu6Ip5rM$ ');
   :root {
     --color-bg: #ffffff;
     --color-outline: #c2c2c2;
@@ -121,7 +122,7 @@
 
   main {
     text-align: center;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-weight: 200;
     line-height: 2;
     font-size: 24px;
@@ -139,16 +140,24 @@
     display: inline-block;
   }
 
+  .dropdown-item:hover {
+      background-color: #f0f0f0; /* Change background color on hover */
+  }
+
   .dropdown-content {
     position: fixed;
     background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
     z-index: 1;
+    display: block;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 15px;
   }
 
   .dropdown-content div {
-    padding: 12px 16px;
+    padding: 8px 10px;
+    line-height: 1.4;
     cursor: pointer;
   }
 
@@ -162,6 +171,42 @@
     background-color: #f0f0f0;
     padding: 5px 10px;
     margin: 5px;
-    cursor: pointer;
+    position: relative;
+    display: flex;
   }
+
+  .done {
+    width: 24px;
+    height: 24px;
+    margin: 0px 5px;
+    background-color: white;
+    border: 2px solid var(--color-outline);
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    top: 12px;
+    left: var(--font-size);
+  }
+
+  .done:before,
+  .done:after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--color-outline);
+  }
+
+  .done:before {
+      transform: rotate(45deg);
+  }
+
+  .done:after {
+      transform: rotate(-45deg);
+  }
+
 </style>
