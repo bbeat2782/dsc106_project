@@ -143,7 +143,7 @@
       tooltip = d3.select(".consumption-plot")
         .append("div")
         .attr("class", "tooltip")
-        .style("position", "fixed")
+        .style("position", "absolute")
         .style("background-color", "white")
         .style("padding", "5px")
         .style("border", "1px solid black")
