@@ -159,16 +159,6 @@
       const tooltipWidth = tooltip.node().offsetWidth;
       const tooltipHeight = tooltip.node().offsetHeight;
 
-      // Check right
-        if (tooltipX + tooltipWidth > width) {
-            tooltipX = width - tooltipWidth;
-        }
-
-      // Check bottom 
-      if (tooltipY + tooltipHeight > height) {
-            tooltipY = height - tooltipHeight;
-      }
-
 
       tooltip.html(`
         <div class="tooltip">
