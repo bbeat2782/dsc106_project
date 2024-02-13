@@ -81,6 +81,7 @@
   <h1>Primary Energy Consumption per Capita Trends</h1>
   <div class="dropdown" on:click={toggleDropdown}>
     <input type="text" placeholder="Search a country" on:input={handleInput} bind:value={inputText}>
+    <input type="text" placeholder="TESTING..">
     <div class="dropdown-content" style="display: {dropdownOpen ? 'block' : 'none'}">
       {#if inputText !== ''}
         {#each uniqueCountries.filter(country => country.toLowerCase().includes(inputText) && !selectedCountries.includes(country)) as country}
