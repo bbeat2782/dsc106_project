@@ -155,6 +155,19 @@
       const tooltipX = x(tooltipPt.year);
       const tooltipY = y(tooltipPt.prim_cons_per_capita);
 
+      // ADJUSTING TOOLTIP 
+      const tooltipWidth = tooltip.node().offsetWidth;
+      const tooltipHeight = tooltip.node().offsetHeight;
+
+      let tooltipX = x(tooltipPt.year) + marginLeft;
+      let tooltipY = y(tooltipPt.prim_cons_per_capita) + marginTop;
+
+      // Check right
+        if (tooltipX + tooltipWidth > width) {
+            tooltipX = width - tooltipWidth;
+        }
+
+
       tooltip.html(`
         <div class="tooltip">
           <b>${tooltipPt.country} - ${tooltipPt.year}</b><br>(${tooltipPt.prim_cons_per_capita} kWh)
