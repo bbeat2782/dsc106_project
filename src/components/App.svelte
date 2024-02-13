@@ -11,9 +11,7 @@
   const continentList = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania', 'World'];
 
   onMount(async () => {
-    const res = await fetch(
-      'https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv',
-    );
+    const res = await fetch('owid-energy-data.csv');
     const csv = await res.text();
     data = await d3.csvParse(csv, d => ({
       country: d['country'],
@@ -127,7 +125,6 @@
     line-height: 2;
     font-size: 10px;
     color: var(--color-text);
-    background-image: url(/src/fa);
   }
 
   h1 {
@@ -169,18 +166,17 @@
   }
 
   .selected-country {
-    background-color: #f0f0f0;
-    text-decoration-color: #3f4252;
-    padding: 5px 10px;
+    background-color: #f2f2f2;
+    padding: 5px 5px;
     margin: 5px;
     position: relative;
     display: flex;
   }
 
   .done {
-    width: 24px;
-    height: 24px;
-    margin: 0px 5px;
+    width: 18px;
+    height: 18px;
+    margin: 0px 5px 0px 0px;
     background-color: white;
     border: 2px solid var(--color-outline);
     appearance: none;
@@ -188,8 +184,8 @@
     outline: none;
     cursor: pointer;
     position: relative;
-    top: 12px;
-    left: var(--font-size);
+    /* top: 12px; */
+    /* left: var(--font-size); */
   }
 
   .done:before,

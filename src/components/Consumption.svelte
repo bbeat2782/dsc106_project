@@ -201,7 +201,6 @@
       ];
 
       barData.sort((a, b) => b.value - a.value);
-      console.log(barData)
       const topThree = barData.slice(0, 3);
       const othersTotal = barData.slice(3).reduce((sum, entry) => sum + entry.value, 0);
       const others = { name: "Others", value: othersTotal };
