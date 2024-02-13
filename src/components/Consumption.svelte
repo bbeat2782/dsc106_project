@@ -152,8 +152,8 @@
     }
 
     if (tooltipPt) {
-      const tooltipX = x(tooltipPt.year);
-      const tooltipY = y(tooltipPt.prim_cons_per_capita);
+      // const tooltipX = x(tooltipPt.year);
+      // const tooltipY = y(tooltipPt.prim_cons_per_capita);
 
       // ADJUSTING TOOLTIP 
       const tooltipWidth = tooltip.node().offsetWidth;
