@@ -130,7 +130,7 @@
 
   h1 {
     font-size: 2em;
-    font-weight: 300;
+    font-weight: 100;
     line-height: 2;
   }
 
