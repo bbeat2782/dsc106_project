@@ -164,11 +164,11 @@
 
       const rect = svg.getBoundingClientRect();
       if (tooltipX + tooltipWidth > rect.right) {
-            tooltipX = rect.right - tooltipWidth;
+            tooltipX = rect.right - tooltipWidth - 100;
       }
 
       if (tooltipY + tooltipHeight > rect.bottom) {
-            tooltipY = rect.bottom - tooltipHeight;
+            tooltipY = rect.bottom - tooltipHeight - 100;
       }
 
 
