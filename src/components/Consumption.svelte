@@ -164,7 +164,7 @@
         </div>
       `)
       .style("left", `${tooltipX} px`)
-      .style("top", `${tooltipY}- 50 px`)
+      .style("top", `${tooltipY} px`)
       .style("display", "block")
       .style("line-height", "1.15")
       .style("transform", "translate(-25%, 50%)");
