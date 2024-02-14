@@ -121,7 +121,7 @@
   }
 
   function updateTooltip(tooltipPt) {
-
+      console.log(tooltipPt.year);
       const tooltipX = x(tooltipPt.year);
       const tooltipY = y(tooltipPt.prim_cons_per_capita);
       let circleColor;

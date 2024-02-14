@@ -7,6 +7,7 @@
   let svg;
   let gx;
   let gy;
+  
 
   const width = 400;
   const height = 512;
@@ -112,6 +113,17 @@
     style="max-width: 100%; height: auto;"
   >
     <g>
+      <text
+        x={width / 2}
+        y={marginTop / 2}
+        text-anchor="middle"
+        alignment-baseline="middle"
+        font-size="16px"
+        font-weight="bold"
+      >
+        Energy Consumption Source for {tooltipPt.country}
+        <tspan dy="1.2em" x={width / 2}>{tooltipPt.year}</tspan>
+      </text>
       <!-- Bars will be rendered here -->
     </g>
   </svg>
