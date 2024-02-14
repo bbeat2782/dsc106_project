@@ -67,7 +67,7 @@
   }
 
   function createBars(color) {
-    console.log(color);
+    // console.log(color);
     const bars = d3.select(svg)
       .selectAll("rect")
       .data(barData);
