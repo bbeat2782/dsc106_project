@@ -96,20 +96,20 @@
   let tooltipPt = null;
   let debounceTimer;
 
-  function updateTooltipDebounced(tooltipPt) {
-      // Clear previous debounce timer
-      clearTimeout(debounceTimer);
+  // function updateTooltipDebounced(tooltipPt) {
+  //     // Clear previous debounce timer
+  //     clearTimeout(debounceTimer);
 
-      if (tooltipPt !== null) {
-          updateTooltip(tooltipPt);
-          return;
-      }
+  //     if (tooltipPt !== null) {
+  //         updateTooltip(tooltipPt);
+  //         return;
+  //     }
 
-      // Set a new debounce timer to update the tooltip after a short delay
-      debounceTimer = setTimeout(() => {
-          updateTooltip(tooltipPt);
-      }, 500);
-  }
+  //     // Set a new debounce timer to update the tooltip after a short delay
+  //     debounceTimer = setTimeout(() => {
+  //         updateTooltip(tooltipPt);
+  //     }, 500);
+  // }
 
 
   function onPointerMove(event) {
@@ -132,46 +132,50 @@
 
     tooltipPt = closestData;
     sendDataToApp(tooltipPt);
-    updateTooltipDebounced(tooltipPt);
+    updateTooltip(tooltipPt);
+    // updateTooltipDebounced(tooltipPt);
   }
 
   function onPointerLeave(event) {
     tooltipPt = null;
-    updateTooltipDebounced(tooltipPt);
+    // updateTooltip(tooltipPt);
+    // updateTooltipDebounced(tooltipPt);
   }
 
-  let tooltip;
+  // let tooltip;
   function updateTooltip(tooltipPt) {
-    if (!tooltip) {
-      // Initialize tooltip for the first time
-      tooltip = d3.select(".consumption-plot")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("position", "absolute")
-        .style("background-color", "rgba(201, 201, 201, 0.2)")
-        // .style("padding", "5px")
-        .style("border", "1px solid black")
-        // .style("width", "200px");
-    }
+  //   if (!tooltip) {
+  //     // Initialize tooltip for the first time
+  //     tooltip = d3.select(".consumption-plot")
+  //       .append("div")
+  //       .attr("class", "tooltip")
+  //       .style("position", "absolute")
+  //       .style("background-color", "rgba(201, 201, 201, 0.2)")
+  //       // .style("padding", "5px")
+  //       .style("border", "1px solid black")
+  //       // .style("width", "200px");
+  //   }
 
-    if (tooltipPt) {
+  //   if (tooltipPt) {
+  //     const tooltipX = x(tooltipPt.year);
+  //     const tooltipY = y(tooltipPt.prim_cons_per_capita);
+
+  //     tooltip.html(`
+  //       <div class="tooltip">
+  //         <b>${tooltipPt.country} - ${tooltipPt.year}</b><br>(${tooltipPt.prim_cons_per_capita} kWh)
+  //         <div class="tooltip-content">
+  //             <div class="barplot"></div>
+  //         </div>
+  //       </div>
+  //     `)
+  //     .style("left", `${tooltipX}px`)
+  //     .style("top", `${tooltipY}px`)
+  //     .style("display", "block")
+  //     .style("line-height", "1.15")
+  //     .style("transform", "translate(0%, 0%)");
+
       const tooltipX = x(tooltipPt.year);
       const tooltipY = y(tooltipPt.prim_cons_per_capita);
-
-      tooltip.html(`
-        <div class="tooltip">
-          <b>${tooltipPt.country} - ${tooltipPt.year}</b><br>(${tooltipPt.prim_cons_per_capita} kWh)
-          <div class="tooltip-content">
-              <div class="barplot"></div>
-          </div>
-        </div>
-      `)
-      .style("left", `${tooltipX}px`)
-      .style("top", `${tooltipY}px`)
-      .style("display", "block")
-      .style("line-height", "1.15")
-      .style("transform", "translate(0%, 0%)");
-
       let circleColor;
       if (tooltipPt.country === 'World') {
         circleColor = "black";
@@ -186,97 +190,98 @@
           .attr("class", "tooltip-circle")
           .attr("cx", tooltipX)
           .attr("cy", tooltipY)
-          .attr("r", 3.5)
+          .attr("r", 4)
           .attr("fill", circleColor);
-
-      // Draw bar plot
-      let barData = [
-        { name: "Biofuel", value: tooltipPt.biofuel_consumption },
-        { name: "Coal", value: tooltipPt.coal_consumption },
-        { name: "Fossil fuel", value: tooltipPt.fossil_fuel_consumption },
-        { name: "Gas", value: tooltipPt.gas_consumption },
-        { name: "Hydro", value: tooltipPt.hydro_consumption },
-        { name: "Low Carbon", value: tooltipPt.low_carbon_consumption },
-        { name: "Nuclear", value: tooltipPt.nuclear_consumption },
-        { name: "Oil", value: tooltipPt.oil_consumption },
-        { name: "Wind", value: tooltipPt.wind_consumption },
-        { name: "Solar", value: tooltipPt.solar_consumption }
-      ];
-
-      barData.sort((a, b) => b.value - a.value);
-      const topThree = barData.slice(0, 3);
-      const othersTotal = barData.slice(3).reduce((sum, entry) => sum + entry.value, 0);
-      const others = { name: "Others", value: othersTotal };
-      barData = topThree.concat(others);
-      barData.sort((a, b) => b.value - a.value);
-      const total = barData.reduce((acc, d) => acc + d.value, 0);
-     
-      const topThreeZero = topThree.every(entry => entry.value === 0);
-
-
-      // Color scale
-      const minValue = d3.min(barData, d => d.value);
-      const maxValue = d3.max(barData, d => d.value);
-      const colorScale = d3.scaleLinear()
-      .domain([minValue, (minValue + maxValue) / 2, maxValue])
-      .range([ '#3d3d3d', '#2f2f2e', '#222121','#121212']);
-
-      const tooltipContent = tooltip.select(".tooltip-content");
-      tooltipContent.selectAll(".barplot").remove();
-
-      tooltip.select(".tooltip")
-        .style("font-size", "13px");
-      
-      tooltip.select(".tooltip-content")
-        .style("font-size", "10px");
-      
-      if (topThreeZero){
-        tooltip.select("tooltip-content")
-        .html("<div>Data Not Available</div>");
-      }
-      else {
-    
-      const bars = tooltipContent.selectAll(".barplot")
-          .data(barData)
-          .enter().append("div")
-          .attr("class", "barplot")
-          .style("display", "flex")
-          .style("height", "15px")
-          .style("margin-top", "5px")
-          .style("position", "relative")
-          // .style("bar-color", "red");
-      bars.append("div")
-          .text(d => d.name)
-          .style("position", "absolute")
-          .style("text-align", "left")
-          .style("white-space", "nowrap")
-          .style("right", "100px"); 
-
-      const barBlocks = bars.append("div")
-          .style("display", "flex")
-          .style("justify-content", "flex-end")
-          .style("height", "100%")
-          .style("width", "100%")
-          .style("position", "relative");
-
-      barBlocks.append("div")
-          .style("background-color", d => colorScale(d.value)) // Use the color scale
-          .style("height", "100%")
-          .style("width", d => `${Math.round(d.value / total * 100)}%`)
-          .style("margin-right", "22px");
-      barBlocks.append("div")
-          .style("position", "absolute")
-          .style("right", "0")
-          .style("top", "0")
-          .style("font-size", "0.8em")
-          .style("padding-right", "2px")
-          .style("line-height", "15px")
-          .text(d => `${Math.round(d.value / total * 100)}%`);
-      }
-    } else {
-      tooltip.style("display", "none");
     }
-  }
+
+  //     // Draw bar plot
+  //     let barData = [
+  //       { name: "Biofuel", value: tooltipPt.biofuel_consumption },
+  //       { name: "Coal", value: tooltipPt.coal_consumption },
+  //       { name: "Fossil fuel", value: tooltipPt.fossil_fuel_consumption },
+  //       { name: "Gas", value: tooltipPt.gas_consumption },
+  //       { name: "Hydro", value: tooltipPt.hydro_consumption },
+  //       { name: "Low Carbon", value: tooltipPt.low_carbon_consumption },
+  //       { name: "Nuclear", value: tooltipPt.nuclear_consumption },
+  //       { name: "Oil", value: tooltipPt.oil_consumption },
+  //       { name: "Wind", value: tooltipPt.wind_consumption },
+  //       { name: "Solar", value: tooltipPt.solar_consumption }
+  //     ];
+
+  //     barData.sort((a, b) => b.value - a.value);
+  //     const topThree = barData.slice(0, 3);
+  //     const othersTotal = barData.slice(3).reduce((sum, entry) => sum + entry.value, 0);
+  //     const others = { name: "Others", value: othersTotal };
+  //     barData = topThree.concat(others);
+  //     barData.sort((a, b) => b.value - a.value);
+  //     const total = barData.reduce((acc, d) => acc + d.value, 0);
+     
+  //     const topThreeZero = topThree.every(entry => entry.value === 0);
+
+
+  //     // Color scale
+  //     const minValue = d3.min(barData, d => d.value);
+  //     const maxValue = d3.max(barData, d => d.value);
+  //     const colorScale = d3.scaleLinear()
+  //     .domain([minValue, (minValue + maxValue) / 2, maxValue])
+  //     .range([ '#3d3d3d', '#2f2f2e', '#222121','#121212']);
+
+  //     const tooltipContent = tooltip.select(".tooltip-content");
+  //     tooltipContent.selectAll(".barplot").remove();
+
+  //     tooltip.select(".tooltip")
+  //       .style("font-size", "13px");
+      
+  //     tooltip.select(".tooltip-content")
+  //       .style("font-size", "10px");
+      
+  //     if (topThreeZero){
+  //       tooltip.select("tooltip-content")
+  //       .html("<div>Data Not Available</div>");
+  //     }
+  //     else {
+    
+  //     const bars = tooltipContent.selectAll(".barplot")
+  //         .data(barData)
+  //         .enter().append("div")
+  //         .attr("class", "barplot")
+  //         .style("display", "flex")
+  //         .style("height", "15px")
+  //         .style("margin-top", "5px")
+  //         .style("position", "relative")
+  //         // .style("bar-color", "red");
+  //     bars.append("div")
+  //         .text(d => d.name)
+  //         .style("position", "absolute")
+  //         .style("text-align", "left")
+  //         .style("white-space", "nowrap")
+  //         .style("right", "100px"); 
+
+  //     const barBlocks = bars.append("div")
+  //         .style("display", "flex")
+  //         .style("justify-content", "flex-end")
+  //         .style("height", "100%")
+  //         .style("width", "100%")
+  //         .style("position", "relative");
+
+  //     barBlocks.append("div")
+  //         .style("background-color", d => colorScale(d.value)) // Use the color scale
+  //         .style("height", "100%")
+  //         .style("width", d => `${Math.round(d.value / total * 100)}%`)
+  //         .style("margin-right", "22px");
+  //     barBlocks.append("div")
+  //         .style("position", "absolute")
+  //         .style("right", "0")
+  //         .style("top", "0")
+  //         .style("font-size", "0.8em")
+  //         .style("padding-right", "2px")
+  //         .style("line-height", "15px")
+  //         .text(d => `${Math.round(d.value / total * 100)}%`);
+  //     }
+  //   } else {
+  //     tooltip.style("display", "none");
+  //   }
+  // }
 
   $: d3.select(svg)
     .on('pointerenter pointermove', onPointerMove)
@@ -316,7 +321,7 @@
       {/each}
 
       <!-- tooltip -->
-      {#if tooltipPt}
-      {/if}
+      <!-- {#if tooltipPt}
+      {/if} -->
     </svg>
 </div>
