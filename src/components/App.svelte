@@ -45,11 +45,9 @@
   }
 
   function handleCountrySelect(country) {
-    // check if the country is already selected
     if (!selectedCountries.includes(country) && (selectedCountries.length < 5)) {
-      // add it to the selected countries array
       selectedCountries = [...selectedCountries, country];
-      inputText = '';  // reset the query
+      inputText = '';
       dropdownOpen = false;
     } else {
       alert("Not able to view more than 5 countries at once. Please remove a country before proceeding.")
@@ -78,7 +76,6 @@
 
   function handleDataUpdate(event) {
     tooltipPt = event.detail;
-    // console.log(tooltipPt);
   }
 </script>
 
@@ -149,7 +146,7 @@
   }
 
   .dropdown-item:hover {
-      background-color: #bce7f4; /* Change background color on hover */
+      background-color: #bce7f4;
   }
 
   .dropdown-content {
@@ -194,8 +191,6 @@
     outline: none;
     cursor: pointer;
     position: relative;
-    /* top: 12px; */
-    /* left: var(--font-size); */
   }
 
   .done:before,
@@ -218,8 +213,7 @@
   }
 
   .container {
-    display: flex;
-    justify-content: space-between; /* Adjust alignment as needed */
+    display: grid;
+    grid-template-columns: 7fr 3fr;
   }
-
 </style>

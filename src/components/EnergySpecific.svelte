@@ -7,22 +7,13 @@
   let svg;
   let gx;
   let gy;
-  // const width = window.innerWidth*0.5;
-  // const height = window.innerHeight*0.5;
-  const width = 928;
-  const height = 512;
-  const marginTop = 20;
-  const marginRight = 30;
-  const marginBottom = 30;
-  const marginLeft = 40;
 
-  // $: worldData = data.filter(d => d.country === 'World' && d.prim_cons_per_capita !== 0);
-  // $: countryData = selectedCountries.map(country => {
-  //   return {
-  //       country: country,
-  //       data: data.filter(d => d.country === country && d.prim_cons_per_capita !== 0)
-  //   };
-  // })
+  const width = 400;
+  const height = 512;
+  const marginTop = 40; // Adjusted margin top to accommodate labels
+  const marginRight = 30;
+  const marginBottom = 40; // Increased margin bottom to ensure space for labels
+  const marginLeft = 100; // Adjusted margin left to create space for labels and axes
 
   $: barData = [
     { name: "Biofuel", value: tooltipPt.biofuel_consumption },
@@ -36,28 +27,24 @@
     { name: "Wind", value: tooltipPt.wind_consumption },
     { name: "Solar", value: tooltipPt.solar_consumption }
   ];
-  // $: console.log(tooltipPt.country);
-  $: total = barData.reduce((acc, d) => acc + d.value, 0)
+
   $: barData = barData.map(d => ({
     name: d.name,
     value: isNaN(d.value) ? 0 : d.value / barData.reduce((acc, d) => acc + d.value, 0)
   }));
-  
-  // $: barData = barData.map(d => ({
-  //   name: d.name,
-  //   value: d.value / (barData.reduce((acc, d) => acc + d.value, 0)) * 100
-  // }))
 
   $: barData.sort((a, b) => b.value - a.value);
 
-  $: xScale = d3.scaleBand()
+  $: yScale = d3.scaleBand()
     .domain(barData.map(d => d.name))
-    .range([marginLeft, width - marginRight])
+    .range([marginTop, height - marginBottom])
     .padding(0.1);
 
-  $: yScale = d3.scaleLinear()
+  $: barHeight = yScale.bandwidth(); // Fixed height for bars
+
+  $: xScale = d3.scaleLinear()
     .domain([0, 1])
-    .range([height - marginBottom, marginTop]);
+    .range([marginLeft, width - marginRight]);
 
   function getColorClass(country) {
       if (country === "World") {
@@ -79,18 +66,15 @@
       bars.enter()
           .append("rect")
           .attr("fill", color)
-          .attr("x", d => xScale(d.name))
-          .attr("width", xScale.bandwidth())
-          .attr("y", height - marginBottom) // Start the bars at the bottom
-          .attr("height", 0) // Initialize height to 0
-          .merge(bars) // Merge new and existing bars
-          .transition() // Start transition after initial drawing
+          .attr("y", d => yScale(d.name))
+          .attr("height", barHeight)
+          .attr("x", marginLeft)
+          .attr("width", 0)
+          .merge(bars)
+          .transition()
           .duration(100)
-          .attr("height", d => Math.abs(yScale(d.value) - yScale(0))) // Set the height based on the difference between top and bottom positions
-          .attr("y", d => {
-              const barHeight = Math.abs(yScale(d.value) - yScale(0));
-              return height - marginBottom - barHeight;
-          });
+          .attr("width", d => Math.abs(xScale(d.value) - xScale(0)))
+          .attr("x", d => Math.min(xScale(d.value), xScale(0)));
 
       const labels = d3.select(svg)
         .selectAll(".label")
@@ -102,14 +86,13 @@
         .append("text")
         .attr("class", "label")
         .merge(labels)
-        .attr("x", d => xScale(d.name) + xScale.bandwidth() / 2)
-        .attr("y", height - marginBottom + 15)
-        .attr("text-anchor", "middle")
+        .attr("x", marginLeft - 5)
+        .attr("y", d => yScale(d.name) + barHeight / 2) // Position labels in the middle of the bar
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "middle")
         .attr("font-size", "12px")
         .text(d => d.name);
   }
-
-
 
   $: color = getColorClass(tooltipPt.country);
   $: if (isNaN(barData[0].value)) {
@@ -120,8 +103,6 @@
 
 </script>
 
-
-
 <div class="energyspecific-plot">
   <svg
     bind:this={svg}
@@ -130,9 +111,8 @@
     viewBox="0 0 {width} {height}"
     style="max-width: 100%; height: auto;"
   >
-    <g transform={`translate(${marginLeft},${marginTop})`}>
+    <g>
       <!-- Bars will be rendered here -->
     </g>
-
   </svg>
 </div>
