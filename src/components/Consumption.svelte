@@ -117,29 +117,29 @@
   }
 
   function onPointerLeave(event) {
-    tooltipPt = null;
   }
 
   function updateTooltip(tooltipPt) {
-      console.log(tooltipPt.year);
-      const tooltipX = x(tooltipPt.year);
-      const tooltipY = y(tooltipPt.prim_cons_per_capita);
-      let circleColor;
-      if (tooltipPt.country === 'World') {
-        circleColor = "black";
-      } else {
-        const lineColorIndex = selectedCountries.indexOf(tooltipPt.country);
-        circleColor = line_color(lineColorIndex);
-      }
+      if (tooltipPt) {
+        const tooltipX = x(tooltipPt.year);
+        const tooltipY = y(tooltipPt.prim_cons_per_capita);
+        let circleColor;
+        if (tooltipPt.country === 'World') {
+          circleColor = "black";
+        } else {
+          const lineColorIndex = selectedCountries.indexOf(tooltipPt.country);
+          circleColor = line_color(lineColorIndex);
+        }
 
-      d3.select(".consumption-plot svg").selectAll(".tooltip-circle").remove(); // Remove previous circles
-      d3.select(".consumption-plot svg")
-          .append("circle")
-          .attr("class", "tooltip-circle")
-          .attr("cx", tooltipX)
-          .attr("cy", tooltipY)
-          .attr("r", 4)
-          .attr("fill", circleColor);
+        d3.select(".consumption-plot svg").selectAll(".tooltip-circle").remove(); // Remove previous circles
+        d3.select(".consumption-plot svg")
+            .append("circle")
+            .attr("class", "tooltip-circle")
+            .attr("cx", tooltipX)
+            .attr("cy", tooltipY)
+            .attr("r", 4)
+            .attr("fill", circleColor);
+      }
     }
 
   $: d3.select(svg)
@@ -148,6 +148,12 @@
 
   function sendDataToApp() {
     dispatch('dataUpdate', tooltipPt);
+  }
+
+  $: if (worldData && !tooltipPt) {
+    tooltipPt = worldData[55];
+    updateTooltip(tooltipPt);
+    sendDataToApp();
   }
 </script>
 

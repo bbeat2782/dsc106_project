@@ -16,18 +16,21 @@
   const marginBottom = 40; // Increased margin bottom to ensure space for labels
   const marginLeft = 100; // Adjusted margin left to create space for labels and axes
 
-  $: barData = [
-    { name: "Biofuel", value: tooltipPt.biofuel_consumption },
-    { name: "Coal", value: tooltipPt.coal_consumption },
-    { name: "Fossil fuel", value: tooltipPt.fossil_fuel_consumption },
-    { name: "Gas", value: tooltipPt.gas_consumption },
-    { name: "Hydro", value: tooltipPt.hydro_consumption },
-    { name: "Low Carbon", value: tooltipPt.low_carbon_consumption },
-    { name: "Nuclear", value: tooltipPt.nuclear_consumption },
-    { name: "Oil", value: tooltipPt.oil_consumption },
-    { name: "Wind", value: tooltipPt.wind_consumption },
-    { name: "Solar", value: tooltipPt.solar_consumption }
-  ];
+  $: barData
+  $: if (tooltipPt) {
+    barData = [
+      { name: "Biofuel", value: tooltipPt.biofuel_consumption },
+      { name: "Coal", value: tooltipPt.coal_consumption },
+      { name: "Fossil fuel", value: tooltipPt.fossil_fuel_consumption },
+      { name: "Gas", value: tooltipPt.gas_consumption },
+      { name: "Hydro", value: tooltipPt.hydro_consumption },
+      { name: "Low Carbon", value: tooltipPt.low_carbon_consumption },
+      { name: "Nuclear", value: tooltipPt.nuclear_consumption },
+      { name: "Oil", value: tooltipPt.oil_consumption },
+      { name: "Wind", value: tooltipPt.wind_consumption },
+      { name: "Solar", value: tooltipPt.solar_consumption }
+    ];
+  }
 
   $: barData = barData.map(d => ({
     name: d.name,
@@ -57,8 +60,7 @@
       }
   }
 
-  function createBars(color) {
-      console.log(color);
+  function createBars() {
 
       const bars = d3.select(svg)
         .selectAll("rect")
@@ -117,12 +119,19 @@
       gridlines.exit().remove();
   }
 
-  $: color = getColorClass(tooltipPt.country);
+  // $: color = getColorClass(tooltipPt.country);
   $: if (isNaN(barData[0].value)) {
     // add something here
     
   } else {
-    createBars(color);
+    createBars();
+  }
+
+  $: if (!tooltipPt.country) {
+    tooltipPt = {
+      country: "World",
+      year: "2020"
+    };
   }
 
 </script>
