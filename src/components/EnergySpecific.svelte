@@ -97,6 +97,24 @@
         .attr("font-size", "12px")
         .text(d => d.name);
 
+
+      // Add horizontal gridlines
+      const gridlines = d3.select(svg)
+          .selectAll(".gridline")
+          .data(yScale.domain());
+
+      gridlines.enter()
+          .append("line")
+          .attr("class", "gridline")
+          .merge(gridlines)
+          .attr("x1", marginLeft)
+          .attr("x2", width - marginRight)
+          .attr("y1", d => yScale(d) + barHeight / 2)
+          .attr("y2", d => yScale(d) + barHeight / 2)
+          .attr("stroke", "#ccc") // Adjust the color of the gridlines
+          .attr("stroke-dasharray", "3,3"); // Add dashed lines if desired
+
+      gridlines.exit().remove();
   }
 
   $: color = getColorClass(tooltipPt.country);
@@ -126,7 +144,7 @@
       font-size="16px"
       font-weight="bold"
     >
-      Energy Consumption Source for {tooltipPt.country}
+      Energy Consumption Source % {tooltipPt.country}
       <tspan dy="1.2em" x={width / 2}>{tooltipPt.year}</tspan>
     </text>
       <!-- Bars will be rendered here -->
