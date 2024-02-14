@@ -11,10 +11,10 @@
 
   const width = 400;
   const height = 512;
-  const marginTop = 40; // Adjusted margin top to accommodate labels
+  const marginTop = 40;
   const marginRight = 30;
-  const marginBottom = 40; // Increased margin bottom to ensure space for labels
-  const marginLeft = 100; // Adjusted margin left to create space for labels and axes
+  const marginBottom = 40;
+  const marginLeft = 100;
 
   $: barData
   $: if (tooltipPt) {
@@ -32,12 +32,10 @@
     ];
   }
 
-  // $: console.log(barData);
   $: barData = barData.map(d => ({
     name: d.name,
     value: d.value == 0 ? 0 : d.value / barData.reduce((acc, d) => acc + d.value, 0)
   }));
-  // $: console.log(barData);
 
   $: barData.sort((a, b) => b.value - a.value);
 
@@ -94,7 +92,7 @@
         .attr("class", "label")
         .merge(labels)
         .attr("x", marginLeft - 5)
-        .attr("y", d => yScale(d.name) + barHeight / 2) // Position labels in the middle of the bar
+        .attr("y", d => yScale(d.name) + barHeight / 2)
         .attr("text-anchor", "end")
         .attr("alignment-baseline", "middle")
         .attr("font-size", "12px")
@@ -110,11 +108,11 @@
           .attr("class", "gridline")
           .merge(gridlines)
           .attr("x1", marginLeft)
-          .attr("x2", width - marginRight*3)
+          .attr("x2", width - marginRight*1.6)
           .attr("y1", d => yScale(d) + barHeight / 2)
           .attr("y2", d => yScale(d) + barHeight / 2)
-          .attr("stroke", "#ccc") // Adjust the color of the gridlines
-          .attr("stroke-dasharray", "3,3"); // Add dashed lines if desired
+          .attr("stroke", "#ccc")
+          .attr("stroke-dasharray", "3,3");
 
       gridlines.exit().remove();
 
@@ -129,26 +127,13 @@
         .append("text")
         .attr("class", "percentage")
         .merge(percentages)
-        .attr("x", d => xScale(0.8)) // Set x-coordinate to the maximum value of xScale
-        .attr("y", d => yScale(d.name) + barHeight / 2) // Adjust y position to center the text vertically
+        .attr("x", d => xScale(0.95))
+        .attr("y", d => yScale(d.name) + barHeight / 2)
         .attr("text-anchor", "start")
         .attr("alignment-baseline", "middle")
         .attr("font-size", "12px")
-        .attr("fill", "black") // Set text color
+        .attr("fill", "black")
         .text(d => `${(d.value * 100).toFixed(2)}%`);
-
-      // percentages.enter()
-      //   .append("text")
-      //   .attr("class", "percentage")
-      //   .merge(percentages)
-      //   .attr("x", d => xScale(d.value) + 5) // Adjust the positioning as needed
-      //   .attr("y", d => yScale(d.name) + barHeight / 2) // Adjust y position to center the text vertically
-      //   .attr("text-anchor", "start")
-      //   .attr("alignment-baseline", "middle")
-      //   .attr("font-size", "12px")
-      //   .attr("fill", "black") // Set text color
-      //   .text(d => `${(d.value * 100).toFixed(2)}%`);
-
   }
 
   function sourceNotAvailable() {
@@ -169,15 +154,23 @@
       if (!tooltipPt.country) {
           tooltipPt = {
               country: "World",
-              year: "2020"
+              year: "2020",
+              prim_cons_per_capita: 0
           };
       }
   } catch (error) {
     console.log('this');
     tooltipPt = {
         country: "World",
-        year: "2020"
+        year: "2020",
+        prim_cons_per_capita: 0
     };
+  }
+
+  function formattedNumber(number) {
+      let formattedNumber = number.toString();
+      formattedNumber = formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return formattedNumber;
   }
 
 </script>
@@ -192,14 +185,16 @@
   >
     <g>
       <text
-      x={width / 2}
+      x={marginLeft}
       y={marginTop / 2}
-      text-anchor="middle"
+      text-anchor="left"
       alignment-baseline="middle"
       font-size="15px"
     >
       Energy Consumption Source %
-      <tspan dy="1.35em" x={width / 2} font-size="13px">{tooltipPt.country} - {tooltipPt.year}</tspan>
+      <tspan dy="1.45em" x={marginLeft} font-size="13px">{tooltipPt.country} - {tooltipPt.year}</tspan>
+      <tspan dx="5px"></tspan>
+      <tspan font-size="10px">({formattedNumber(tooltipPt.prim_cons_per_capita)} kWh)</tspan>
     </text>
       <!-- Bars will be rendered here -->
     </g>
