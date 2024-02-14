@@ -100,7 +100,6 @@
         .attr("font-size", "12px")
         .text(d => d.name);
 
-
       // Add horizontal gridlines
       const gridlines = d3.select(svg)
           .selectAll(".gridline")
@@ -111,13 +110,45 @@
           .attr("class", "gridline")
           .merge(gridlines)
           .attr("x1", marginLeft)
-          .attr("x2", width - marginRight)
+          .attr("x2", width - marginRight*3)
           .attr("y1", d => yScale(d) + barHeight / 2)
           .attr("y2", d => yScale(d) + barHeight / 2)
           .attr("stroke", "#ccc") // Adjust the color of the gridlines
           .attr("stroke-dasharray", "3,3"); // Add dashed lines if desired
 
       gridlines.exit().remove();
+
+      // Add percentages
+      const percentages = d3.select(svg)
+          .selectAll(".percentage")
+          .data(barData);
+
+      percentages.exit().remove();
+
+      percentages.enter()
+        .append("text")
+        .attr("class", "percentage")
+        .merge(percentages)
+        .attr("x", d => xScale(0.8)) // Set x-coordinate to the maximum value of xScale
+        .attr("y", d => yScale(d.name) + barHeight / 2) // Adjust y position to center the text vertically
+        .attr("text-anchor", "start")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "12px")
+        .attr("fill", "black") // Set text color
+        .text(d => `${(d.value * 100).toFixed(2)}%`);
+
+      // percentages.enter()
+      //   .append("text")
+      //   .attr("class", "percentage")
+      //   .merge(percentages)
+      //   .attr("x", d => xScale(d.value) + 5) // Adjust the positioning as needed
+      //   .attr("y", d => yScale(d.name) + barHeight / 2) // Adjust y position to center the text vertically
+      //   .attr("text-anchor", "start")
+      //   .attr("alignment-baseline", "middle")
+      //   .attr("font-size", "12px")
+      //   .attr("fill", "black") // Set text color
+      //   .text(d => `${(d.value * 100).toFixed(2)}%`);
+
   }
 
   function sourceNotAvailable() {
@@ -134,10 +165,18 @@
     createBars();
   }
 
-  $: if (!tooltipPt.country) {
+  $: try {
+      if (!tooltipPt.country) {
+          tooltipPt = {
+              country: "World",
+              year: "2020"
+          };
+      }
+  } catch (error) {
+    console.log('this');
     tooltipPt = {
-      country: "World",
-      year: "2020"
+        country: "World",
+        year: "2020"
     };
   }
 
