@@ -58,15 +58,17 @@
   }
 
   function createBars(color) {
+      console.log(color);
+
       const bars = d3.select(svg)
         .selectAll("rect")
         .data(barData);
-      
+      let col = getColorClass(tooltipPt.country);
       bars.exit().remove();
 
       bars.enter()
           .append("rect")
-          .attr("fill", color)
+          .attr("fill", col)
           .attr("y", d => yScale(d.name))
           .attr("height", barHeight)
           .attr("x", marginLeft)
@@ -74,6 +76,7 @@
           .merge(bars)
           .transition()
           .duration(100)
+          .attr("fill", d => getColorClass(tooltipPt.country))
           .attr("width", d => Math.abs(xScale(d.value) - xScale(0)))
           .attr("x", d => Math.min(xScale(d.value), xScale(0)));
 
@@ -93,11 +96,13 @@
         .attr("alignment-baseline", "middle")
         .attr("font-size", "12px")
         .text(d => d.name);
+
   }
 
   $: color = getColorClass(tooltipPt.country);
   $: if (isNaN(barData[0].value)) {
     // add something here
+    
   } else {
     createBars(color);
   }
@@ -114,16 +119,16 @@
   >
     <g>
       <text
-        x={width / 2}
-        y={marginTop / 2}
-        text-anchor="middle"
-        alignment-baseline="middle"
-        font-size="16px"
-        font-weight="bold"
-      >
-        Energy Consumption Source for {tooltipPt.country}
-        <tspan dy="1.2em" x={width / 2}>{tooltipPt.year}</tspan>
-      </text>
+      x={width / 2}
+      y={marginTop / 2}
+      text-anchor="middle"
+      alignment-baseline="middle"
+      font-size="16px"
+      font-weight="bold"
+    >
+      Energy Consumption Source for {tooltipPt.country}
+      <tspan dy="1.2em" x={width / 2}>{tooltipPt.year}</tspan>
+    </text>
       <!-- Bars will be rendered here -->
     </g>
   </svg>
