@@ -32,10 +32,12 @@
     ];
   }
 
+  // $: console.log(barData);
   $: barData = barData.map(d => ({
     name: d.name,
-    value: isNaN(d.value) ? 0 : d.value / barData.reduce((acc, d) => acc + d.value, 0)
+    value: d.value == 0 ? 0 : d.value / barData.reduce((acc, d) => acc + d.value, 0)
   }));
+  // $: console.log(barData);
 
   $: barData.sort((a, b) => b.value - a.value);
 
@@ -61,7 +63,6 @@
   }
 
   function createBars() {
-
       const bars = d3.select(svg)
         .selectAll("rect")
         .data(barData);
@@ -119,10 +120,16 @@
       gridlines.exit().remove();
   }
 
+  function sourceNotAvailable() {
+    const bars = d3.select(svg)
+        .selectAll("rect")
+        .remove();
+  }
+
   // $: color = getColorClass(tooltipPt.country);
   $: if (isNaN(barData[0].value)) {
     // add something here
-    
+    sourceNotAvailable();
   } else {
     createBars();
   }
@@ -158,5 +165,10 @@
     </text>
       <!-- Bars will be rendered here -->
     </g>
+    <text x={marginLeft/2}
+    y={height - marginBottom/2}
+    >
+      Note: Bars are not shown when there is no data
+    </text>
   </svg>
 </div>
