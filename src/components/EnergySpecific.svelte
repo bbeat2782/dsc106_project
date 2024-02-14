@@ -37,15 +37,18 @@
     { name: "Solar", value: tooltipPt.solar_consumption }
   ];
   // $: console.log(tooltipPt.country);
+  $: total = barData.reduce((acc, d) => acc + d.value, 0)
   $: barData = barData.map(d => ({
     name: d.name,
-    value: isNaN(d.value) ? 0 : d.value
+    value: isNaN(d.value) ? 0 : d.value / barData.reduce((acc, d) => acc + d.value, 0)
   }));
+  
+  // $: barData = barData.map(d => ({
+  //   name: d.name,
+  //   value: d.value / (barData.reduce((acc, d) => acc + d.value, 0)) * 100
+  // }))
+
   $: barData.sort((a, b) => b.value - a.value);
-  $: barData = barData.map(d => ({
-    name: d.name,
-    value: d.value / (barData.reduce((acc, d) => acc + d.value, 0)) * 100
-  }))
 
   $: xScale = d3.scaleBand()
     .domain(barData.map(d => d.name))
@@ -53,7 +56,7 @@
     .padding(0.1);
 
   $: yScale = d3.scaleLinear()
-    .domain([0, 100])
+    .domain([0, 1])
     .range([height - marginBottom, marginTop]);
 
   function getColorClass(country) {
@@ -67,45 +70,46 @@
   }
 
   function createBars(color) {
-    // console.log(color);
-    const bars = d3.select(svg)
-      .selectAll("rect")
-      .data(barData);
-    
-    bars.exit().remove();
+      const bars = d3.select(svg)
+        .selectAll("rect")
+        .data(barData);
+      
+      bars.exit().remove();
 
-    bars.enter()
-        .append("rect")
-        .attr("fill", color)
-        .merge(bars) // Merge new and existing bars
-        .attr("x", d => xScale(d.name))
-        .attr("width", xScale.bandwidth())
-        .attr("y", height - marginBottom) // Start the bars at the bottom
-        .attr("height", 0) // Initialize height to 0
-        .transition()
-        .duration(500)
-        .attr("height", d => Math.abs(yScale(d.value) - yScale(0))) // Set the height based on the difference between top and bottom positions
-        .attr("y", d => {
-            const barHeight = Math.abs(yScale(d.value) - yScale(0));
-            return height - marginBottom - barHeight;
-        });
+      bars.enter()
+          .append("rect")
+          .attr("fill", color)
+          .attr("x", d => xScale(d.name))
+          .attr("width", xScale.bandwidth())
+          .attr("y", height - marginBottom) // Start the bars at the bottom
+          .attr("height", 0) // Initialize height to 0
+          .merge(bars) // Merge new and existing bars
+          .transition() // Start transition after initial drawing
+          .duration(100)
+          .attr("height", d => Math.abs(yScale(d.value) - yScale(0))) // Set the height based on the difference between top and bottom positions
+          .attr("y", d => {
+              const barHeight = Math.abs(yScale(d.value) - yScale(0));
+              return height - marginBottom - barHeight;
+          });
 
-    const labels = d3.select(svg)
-      .selectAll(".label")
-      .data(barData);
+      const labels = d3.select(svg)
+        .selectAll(".label")
+        .data(barData);
 
-    labels.exit().remove();
+      labels.exit().remove();
 
-    labels.enter()
-      .append("text")
-      .attr("class", "label")
-      .merge(labels)
-      .attr("x", d => xScale(d.name) + xScale.bandwidth() / 2)
-      .attr("y", height - marginBottom + 15)
-      .attr("text-anchor", "middle")
-      .attr("font-size", "12px")
-      .text(d => d.name);
+      labels.enter()
+        .append("text")
+        .attr("class", "label")
+        .merge(labels)
+        .attr("x", d => xScale(d.name) + xScale.bandwidth() / 2)
+        .attr("y", height - marginBottom + 15)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .text(d => d.name);
   }
+
+
 
   $: color = getColorClass(tooltipPt.country);
   $: if (isNaN(barData[0].value)) {
