@@ -157,11 +157,10 @@
       y={marginTop / 2}
       text-anchor="middle"
       alignment-baseline="middle"
-      font-size="16px"
-      font-weight="bold"
+      font-size="15px"
     >
-      Energy Consumption Source % {tooltipPt.country}
-      <tspan dy="1.2em" x={width / 2}>{tooltipPt.year}</tspan>
+      Energy Consumption Source %
+      <tspan dy="1.35em" x={width / 2} font-size="13px">{tooltipPt.country} - {tooltipPt.year}</tspan>
     </text>
       <!-- Bars will be rendered here -->
     </g>

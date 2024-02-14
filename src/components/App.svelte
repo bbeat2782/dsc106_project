@@ -80,7 +80,7 @@
 </script>
 
 <main on:click={closeDropdown}>
-  <h1>Primary Energy Consumption per Capita Trends</h1>
+  <h1>Primary Energy Consumption per Capita Trends Across Countries</h1>
   <div class="dropdown" on:click={toggleDropdown}>
     <input type="text" placeholder="Search a country" on:input={handleInput} bind:value={inputText}>
     <div class="dropdown-content" style="display: {dropdownOpen ? 'block' : 'none'}">
