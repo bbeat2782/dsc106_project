@@ -2,12 +2,15 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import * as d3 from 'd3';
   import Consumption from './Consumption.svelte';
+  import EnergySpecific from './EnergySpecific.svelte';
 
   let data = [];
   let inputText = '';
   let uniqueCountries = [];
   let selectedCountries = [];
   let dropdownOpen = false;
+  let tooltipPt = {};
+  
   const continentList = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania', 'World'];
 
   onMount(async () => {
@@ -73,6 +76,10 @@
       return colors[index % colors.length];
   }
 
+  function handleDataUpdate(event) {
+    tooltipPt = event.detail;
+    // console.log(tooltipPt);
+  }
 </script>
 
 <main on:click={closeDropdown}>
@@ -96,7 +103,10 @@
     {/each}
   </div>
 
-  <Consumption {data} {selectedCountries} />
+  <div class="container">
+    <Consumption on:dataUpdate={handleDataUpdate} {data} {selectedCountries} />
+    <EnergySpecific {tooltipPt} {selectedCountries} />
+  </div>
 </main>
 
 <style>
@@ -205,6 +215,11 @@
 
   .done:after {
       transform: rotate(-45deg);
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between; /* Adjust alignment as needed */
   }
 
 </style>

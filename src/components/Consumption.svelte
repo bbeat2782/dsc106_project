@@ -1,19 +1,22 @@
 <script>
   import * as d3 from 'd3';
-  import { getAllContexts, getContext } from 'svelte';
+  import { getAllContexts, getContext, createEventDispatcher } from 'svelte';
 
 
   export let data;
   export let selectedCountries;
 
   let countryData = {};
-
+  // console.log(window.innerWidth);
+  // const width = window.innerWidth*0.5;
+  // const height = window.innerHeight*0.5;
   const width = 928;
-  const height = 600;
+  const height = 512;
   const marginTop = 20;
   const marginRight = 30;
   const marginBottom = 30;
   const marginLeft = 40;
+  const dispatch = createEventDispatcher();
 
   const line_color = d3.scaleOrdinal()
 			.range(["#648FFF", "#FE6100", "#DC267F", "#FFB000" ,"#785EF0"]);
@@ -105,7 +108,7 @@
       // Set a new debounce timer to update the tooltip after a short delay
       debounceTimer = setTimeout(() => {
           updateTooltip(tooltipPt);
-      }, 10);
+      }, 500);
   }
 
 
@@ -128,6 +131,7 @@
     });
 
     tooltipPt = closestData;
+    sendDataToApp(tooltipPt);
     updateTooltipDebounced(tooltipPt);
   }
 
@@ -144,11 +148,10 @@
         .append("div")
         .attr("class", "tooltip")
         .style("position", "absolute")
-        style("background-color", "rgba(255, 255, 255, 0.4)")
-        .style("padding", "5px")
+        .style("background-color", "rgba(201, 201, 201, 0.2)")
+        // .style("padding", "5px")
         .style("border", "1px solid black")
-        .style("display", "none")
-        .style("width", "200px");
+        // .style("width", "200px");
     }
 
     if (tooltipPt) {
@@ -167,7 +170,7 @@
       .style("top", `${tooltipY}px`)
       .style("display", "block")
       .style("line-height", "1.15")
-      .style("transform", "translate(-25%, 50%)");
+      .style("transform", "translate(0%, 0%)");
 
       let circleColor;
       if (tooltipPt.country === 'World') {
@@ -241,7 +244,7 @@
           .style("height", "15px")
           .style("margin-top", "5px")
           .style("position", "relative")
-          .style("bar-color", "red");
+          // .style("bar-color", "red");
       bars.append("div")
           .text(d => d.name)
           .style("position", "absolute")
@@ -278,6 +281,10 @@
   $: d3.select(svg)
     .on('pointerenter pointermove', onPointerMove)
     .on('pointerleave', onPointerLeave);
+
+  function sendDataToApp() {
+    dispatch('dataUpdate', tooltipPt);
+  }
 </script>
 
 <div class="consumption-plot">
