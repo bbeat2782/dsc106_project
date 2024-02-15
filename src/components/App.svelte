@@ -80,8 +80,8 @@
 </script>
 
 <main on:click={closeDropdown}>
-  <h1>Primary Energy Consumption per Capita Trends Across Countries</h1>
-  <div class="dropdown" on:click={toggleDropdown}>
+  <h1 style="line-height: 1.25">Do Trends in Energy Consumption Per Capita Differ Across Countries, and<br>What Are the Leading Energy Sources?</h1>
+  <div style="margin-top: 10px;"  class="dropdown" on:click={toggleDropdown}>
     <input type="text" placeholder="Search a country" on:input={handleInput} bind:value={inputText}>
     <div class="dropdown-content" style="display: {dropdownOpen ? 'block' : 'none'}">
       {#if inputText !== ''}
@@ -104,7 +104,21 @@
     <Consumption on:dataUpdate={handleDataUpdate} {data} {selectedCountries} />
     <EnergySpecific {tooltipPt} {selectedCountries} />
   </div>
+
 </main>
+<br><br><br><hr><br><br>
+<div class="writeup">
+  <h2>Project3 Writeup</h2>
+  <p>
+    For our project, we chose to use the Data on Energy by Our World in Data, 1900-2022, from Our World In Data. The goal of our visualization was to see how primary energy consumption per capita breaks down over the years compared among countries. Our main visualization is a line plot with an added search function for the user to view and compare up to 5 countries at a time. The line plot shows the given countries' primary energy consumption per capita (kWh per person) on the y-axis and years on the x-axis. We also added a dashed line of world energy consumption that is constantly viewed. Once the viewer adds a country through the search bar at the top the line plot for the given country is added to the visualization and a tile is added above to keep track. We color-coded the title of the country to the line on the plot for clarity as well as added a button next to the country for easy removal and editing of the countries visualized on the plot. If the user attempts to add more than 5 countries an alert popups explaining to the user that a country needs to be removed before adding a new one. We considered adding all the countries on the plot and then adding a tooltip interaction to highlight one line that's being hovered over but the complexity of graphing all the countries made the application too slow and visually cluttered once it did execute. The search functionality and capping of 5 countries allow users to gain quick and clear insights into energy consumption differences among countries.
+  </p><br>
+  <p>
+    A tooltip integration is the aspect that took the most time. In developing a tooltip we ran into issues with intersecting lines and the tooltip obstructing other data on the line plot. So we tried making a tooltip to have a semi-transparent background color, positioning it at a certain point, and reducing the size, but we thought none of them were good at telling a story. Thus instead of having a tooltip directly on the visualization, we opted for a second interactive visualization: a horizontal bar plot that breaks down energy consumption by type for the given year and country hovered over on the line plot. The bar plot has energy consumption per capita categories on the y-axis and percentages on the x-axis. The color gradients of the bars correspond to the color of the line on the line plot. Also, to emphasize the line plot more than the bar plot, we allocate 70% of the width to the line plot.
+  </p><br>
+  <p>
+    The entire process of completing this project took about 30 people-hours split up among the three of us. First, we met over Zoom to discuss which dataset and question we wanted to explore through Project 3. Then, David did the initial setup for hosting the webpage on Github and loading the dataset to our Svelte project. He also created rough line and bar plots to give a starting point. He also worked on setting the search box for different countries and interactivity between the line and bar plot on mouse hovering to further explore each country in a specific year. 
+  </p>
+</div>
 
 <style>
   @import url('https://urldefense.com/v3/__https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap__;!!Mih3wA!Aycbzsnv_MBp12VkXdbhGtgaYZ57wTbfZe5Y_cuB4d9pUNWtjLVVNWxxVm9mqNc6X1xOKdUhmMJHBu6Ip5rM$ ');
@@ -138,6 +152,10 @@
     font-size: 3em;
     font-weight: bolder;
     line-height: 2;
+  }
+  
+  .writeup {
+    font-family: 'Inria Sans', sans-serif;
   }
 
   .dropdown {
