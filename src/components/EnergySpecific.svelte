@@ -8,7 +8,6 @@
   let gx;
   let gy;
   
-
   const width = 400;
   const height = 512;
   const marginTop = 40;
@@ -32,6 +31,7 @@
     ];
   }
 
+  // Get percentages for each category. If no value, set to 0
   $: barData = barData.map(d => ({
     name: d.name,
     value: d.value == 0 ? 0 : d.value / barData.reduce((acc, d) => acc + d.value, 0)
@@ -44,7 +44,7 @@
     .range([marginTop, height - marginBottom])
     .padding(0.1);
 
-  $: barHeight = yScale.bandwidth(); // Fixed height for bars
+  $: barHeight = yScale.bandwidth();
 
   $: xScale = d3.scaleLinear()
     .domain([0, 1])
@@ -65,8 +65,9 @@
         .selectAll("rect")
         .data(barData);
       let col = getColorClass(tooltipPt.country);
-      bars.exit().remove();
 
+      // Add bars for categories
+      bars.exit().remove();
       bars.enter()
           .append("rect")
           .attr("fill", col)
@@ -81,12 +82,11 @@
           .attr("width", d => Math.abs(xScale(d.value) - xScale(0)))
           .attr("x", d => Math.min(xScale(d.value), xScale(0)));
 
+      // Add labels for categories
       const labels = d3.select(svg)
         .selectAll(".label")
         .data(barData);
-
       labels.exit().remove();
-
       labels.enter()
         .append("text")
         .attr("class", "label")
@@ -102,7 +102,6 @@
       const gridlines = d3.select(svg)
           .selectAll(".gridline")
           .data(yScale.domain());
-
       gridlines.enter()
           .append("line")
           .attr("class", "gridline")
@@ -114,15 +113,11 @@
           .attr("stroke", "#ccc")
           .attr("stroke-dasharray", "3,3");
 
-      gridlines.exit().remove();
-
-      // Add percentages
+      // Add percentages right side of each category
       const percentages = d3.select(svg)
           .selectAll(".percentage")
           .data(barData);
-
       percentages.exit().remove();
-
       percentages.enter()
         .append("text")
         .attr("class", "percentage")
@@ -142,14 +137,14 @@
         .remove();
   }
 
-  // $: color = getColorClass(tooltipPt.country);
   $: if (isNaN(barData[0].value)) {
-    // add something here
+    // Error handling for cases where there is no value for each category
     sourceNotAvailable();
   } else {
     createBars();
   }
 
+  // Setting the intial data of World-2020 to be shown
   $: try {
       if (!tooltipPt.country) {
           tooltipPt = {
@@ -167,6 +162,7 @@
     };
   }
 
+  // Formatting number so that it's easier to read
   function formattedNumber(number) {
       let formattedNumber = number.toString();
       formattedNumber = formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -196,7 +192,6 @@
       <tspan dx="5px"></tspan>
       <tspan font-size="10px">({formattedNumber(tooltipPt.prim_cons_per_capita)} kWh)</tspan>
     </text>
-      <!-- Bars will be rendered here -->
     </g>
     <text x={marginLeft/2}
     y={height - marginBottom/2}
